@@ -1,0 +1,161 @@
+/* ============================================================
+   base.css — reset + §2.1 THE PIXEL CONTRACT.
+   These rules are load-bearing. Read §2.1 before changing any.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  /* §2.1 rule 1 — border-radius: 0 everywhere. No exceptions. */
+  border-radius: 0;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  color-scheme: var(--scheme, light);
+  -webkit-text-size-adjust: 100%;
+  /* §8 — scroll-padding so anchored sections clear the docked nav. */
+  scroll-padding-top: 96px;
+}
+
+body {
+  min-height: 100dvh;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: var(--t-body);
+  line-height: 1.65;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  /* §4.2 — stepped theme transition, never smooth. */
+  transition:
+    background-color 200ms steps(4),
+    color 200ms steps(4);
+}
+
+/* §2.1 rule 5 — pixelated rendering on every raster surface. */
+img,
+canvas,
+svg[data-pixel],
+video {
+  image-rendering: pixelated;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Type roles (§2.3). Silkscreen and Pixelify never carry paragraphs. */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+}
+
+button { cursor: pointer; }
+
+ul, ol { list-style: none; padding: 0; }
+
+a {
+  color: inherit;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* ---------- §7 FOCUS RULE ----------
+   4px, offset 4px, --focus. Visible on every interactive element.
+   Never write `outline: none` without a replacement of equal weight. */
+:focus-visible {
+  outline: 4px solid var(--focus);
+  outline-offset: 4px;
+}
+/* Suppress the UA ring only where :focus-visible is supported and has
+   already taken over. */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+::selection {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+/* ---------- §4.4 skip link ---------- */
+.skip-link {
+  position: absolute;
+  left: var(--sp-4);
+  top: var(--sp-4);
+  z-index: 1000;
+  transform: translateY(-200%);
+  background: var(--bg-raised);
+  color: var(--ink);
+  border: 2px solid var(--line);
+  box-shadow: 4px 4px 0 var(--shadow);
+  padding: var(--sp-3) var(--sp-4);
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* Visually hidden but readable by assistive tech. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ---------- §4.3 GLOBAL REDUCED-MOTION CONTRACT ----------
+   Scoped so the §4.5 "Motion: Full" setting can opt back in. Without the
+   :not(), an explicit choice in the settings menu could never beat the OS
+   preference and the control would be a lie. */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion='full']) *,
+  :root:not([data-motion='full']) *::before,
+  :root:not([data-motion='full']) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* The same contract, forced on by the §4.5 settings toggle. */
+[data-motion='reduced'] *,
+[data-motion='reduced'] *::before,
+[data-motion='reduced'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ---------- Shared pixel keyframes ---------- */
+@keyframes pixel-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

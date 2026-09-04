@@ -1,0 +1,265 @@
+/* ============================================================
+   sections.css — motion for §6's content sections.
+   Every keyframe here is stepped. Nothing tweens, nothing blurs,
+   and the global reduced-motion contract in base.css stops all
+   of it (§4.3).
+   ============================================================ */
+
+/* Shared by the S02 ticker and the S01 starfield: one seamless pass. */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- S01 hero load sequence (§S01, under 1.5s total) ---------- */
+
+/* 1. Station scene draws in via a dither wipe, 400ms. */
+@keyframes station-wipe {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.hero-station {
+  animation: station-wipe 400ms steps(8) both;
+}
+
+/* 2. MOCHI drops in with a 3-frame landing squash, 200ms. */
+@keyframes mochi-drop {
+  0% {
+    transform: translateY(-32px) scaleY(1);
+  }
+  50% {
+    transform: translateY(0) scaleY(1);
+  }
+  75% {
+    transform: translateY(0) scaleY(0.82);
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+}
+.hero-mochi {
+  transform-origin: bottom center;
+  animation: mochi-drop 200ms steps(3) 400ms both;
+}
+
+/* 3. Headline reveals character by character, 500ms total.
+      Visibility, not opacity — a character either exists or it doesn't,
+      and this way the line never reflows as it fills in. */
+@keyframes char-in {
+  from {
+    visibility: hidden;
+  }
+  to {
+    visibility: visible;
+  }
+}
+.hero-char {
+  animation: char-in 1ms steps(1) both;
+}
+
+/* 4. Subhead and lead step in. §S01 calls this a "fade-step", so opacity is
+      intended here — but in whole steps, never a smooth fade. */
+@keyframes step-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.hero-step {
+  animation: step-in 200ms steps(4) both;
+}
+
+/* 5. Buttons pop in with a 2px shadow snap. */
+@keyframes shadow-snap {
+  from {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 var(--shadow);
+  }
+  to {
+    transform: translate(0, 0);
+    box-shadow: 4px 4px 0 var(--shadow);
+  }
+}
+.hero-pop {
+  animation: shadow-snap 150ms steps(2) 1150ms both;
+}
+
+/* Scroll hint chevron — 3 frames, per §S01. */
+@keyframes chevron-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  33% {
+    transform: translateY(2px);
+  }
+  66% {
+    transform: translateY(4px);
+  }
+}
+.chevron-bob {
+  animation: chevron-bob 1.2s steps(3) infinite;
+}
+
+/* ---------- S03 "How I work" connector ---------- */
+@keyframes rail-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.rail-draw {
+  transform-origin: left center;
+  animation: rail-draw 600ms steps(4) both;
+}
+@keyframes rail-draw-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.rail-draw-y {
+  transform-origin: top center;
+  animation: rail-draw-y 600ms steps(4) both;
+}
+
+/* The S07 progress bar and the S08 segments used to animate from a hidden
+   `from` state with animation-fill-mode: both. That strands them empty if the
+   animation never gets a frame, so both are now driven by React state and
+   their keyframes are gone deliberately. Don't reintroduce them. */
+
+/* Ongoing certification marker — a blink, not a glow. */
+@keyframes dot-pulse {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+.dot-pulse {
+  animation: dot-pulse 1.4s steps(1) infinite;
+}
+
+/* ---------- S04 inventory tab swap ----------
+   §S04 asks for a 150ms dither transition, and §2.1 rule 8 bans fading a
+   panel with opacity. So the panel content never animates at all: a dither
+   overlay is mounted over it for 150ms and then unmounted by React. Driving
+   it from state rather than animation-fill-mode means a dropped frame can
+   never strand the panel invisible. */
+.dither-swap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(var(--bg-raised) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+  animation: dither-thin 150ms steps(3) forwards;
+}
+@keyframes dither-thin {
+  from {
+    background-size: 2px 2px;
+  }
+  to {
+    background-size: 8px 8px;
+  }
+}
+
+/* The tab strip scrolls rather than wrapping at 320px (§S04), with a hard
+   right edge marking the overflow — a soft gradient fade is not available
+   to us, so the edge is a 2px rule instead. */
+.tabstrip {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabstrip::-webkit-scrollbar {
+  display: none;
+}
+
+/* §S01 edge case: on a landscape phone (< 500px tall) the station scene is
+   dropped and MOCHI stays inline, so the hero still fits. Tailwind has no
+   arbitrary variant for "landscape AND short", so it lives here. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .hide-on-short-landscape {
+    display: none;
+  }
+}
+
+/* ---------- S10 break room ---------- */
+
+/* §S10: three pixel puffs rising and dissipating on a staggered 4s loop.
+   The dissipate is stepped opacity, so it reads as four discrete puffs
+   rather than a smooth fade. */
+.steam-puff {
+  position: absolute;
+  bottom: 0;
+  width: 4px;
+  height: 4px;
+  background: var(--ink-mute);
+  animation: steam-rise 4s steps(4) infinite;
+}
+@keyframes steam-rise {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-40px);
+    opacity: 0;
+  }
+}
+
+/* ---------- S11 footer scene ---------- */
+
+/* §S11: stars twinkle at three different intervals between 2 and 5s.
+   steps(1) makes it a blink, not a glow. */
+@keyframes twinkle {
+  0%,
+  70% {
+    opacity: 1;
+  }
+  71%,
+  100% {
+    opacity: 0;
+  }
+}
+.twinkle {
+  animation: twinkle var(--twinkle-dur, 3s) steps(1) infinite;
+}
+
+/* §S11 easter egg: a small confetti-pixel burst. */
+.confetti-bit {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: 4px;
+  height: 4px;
+  animation: confetti-fly 700ms steps(6) forwards;
+}
+@keyframes confetti-fly {
+  from {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--dx, 0), var(--dy, -32px));
+    opacity: 0;
+  }
+}

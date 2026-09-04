@@ -1,0 +1,267 @@
+/* ============================================================
+   airlock.css — §S00.
+   The gate shows both palettes at once, so it deliberately uses
+   the CORE tokens rather than the theme-mapped ones: --paper and
+   --navy-900 mean the same thing whichever theme is active.
+   ============================================================ */
+
+/* §S00 edge case: hidden by default, revealed only once JS sets the
+   attribute. A visitor without JS is never held behind a door that has
+   nothing to open it. */
+.airlock {
+  display: none;
+}
+html[data-airlock='open'] .airlock {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: block;
+  overflow: hidden;
+}
+
+/* ---------- the two palettes ---------- */
+
+.airlock__night {
+  position: absolute;
+  inset: 0;
+  background: var(--navy-900);
+}
+
+/* Clipped over the night layer. Moving the clip edge is what makes one
+   palette flood across the seam (§S00 step 1). */
+.airlock__day {
+  position: absolute;
+  inset: 0;
+  background: var(--paper);
+}
+
+.airlock__seam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  margin-left: -4px;
+  --dither-ink: var(--moss-500);
+}
+
+/* §S00: the idle half dims to dither-25. */
+.airlock__idle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  pointer-events: none;
+  --dither-ink: var(--navy-900);
+}
+
+/* ---------- layout ---------- */
+
+.airlock__content {
+  position: relative;
+  display: flex;
+  height: 100dvh;
+  flex-direction: column;
+}
+
+/* The doors are rendered twice, stacked: the real interactive set inked for
+   night, and a clipped decorative copy inked for day. Both occupy the same
+   box so their text lines up exactly. */
+.airlock__doorsWrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.airlock__doors {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.airlock__doors--ghost {
+  pointer-events: none;
+}
+
+.airlock__door {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  padding: var(--sp-8);
+  background: transparent;
+  transition:
+    transform 80ms steps(2),
+    box-shadow 80ms steps(2);
+}
+
+/* Ink is set on the layer, not the door, so it follows the flood edge.
+   Measured: navy-700 on paper 13.24:1, moss-100 on navy-900 13.70:1. */
+.airlock__doors--day {
+  color: var(--navy-700);
+}
+.airlock__doors--night {
+  color: var(--moss-100);
+}
+
+/* §S00 active state: the door presses in 4px and its shadow collapses. */
+.airlock__door:active .airlock__enter {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 currentColor;
+}
+
+.airlock__icon {
+  display: block;
+}
+
+.airlock__title {
+  font-family: 'Silkscreen', ui-monospace, monospace;
+  font-weight: 700;
+  font-size: var(--t-h2);
+  letter-spacing: 0.04em;
+}
+
+.airlock__sub {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: var(--t-body);
+  opacity: 1;
+}
+.airlock__doors--day .airlock__sub {
+  color: var(--navy-500);
+}
+.airlock__doors--night .airlock__sub {
+  color: var(--moss-300);
+}
+
+.airlock__enter {
+  display: inline-flex;
+  min-height: 44px;
+  min-width: 120px;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--sp-4);
+  padding: var(--sp-3) var(--sp-6);
+  border: 2px solid currentColor;
+  box-shadow: 4px 4px 0 currentColor;
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+  font-weight: 600;
+  font-size: var(--t-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    transform 80ms steps(2),
+    box-shadow 80ms steps(2);
+}
+
+.airlock__door:hover .airlock__enter {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 currentColor;
+}
+
+/* §S00 reduced motion: a static 2px highlight replaces the flood. */
+.airlock__enter.is-highlighted {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+/* MOCHI floats on the seam, above the bar. */
+.airlock__mochi {
+  position: absolute;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* ---------- the bar ---------- */
+
+.airlock__bar {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3) var(--sp-8);
+  border-top: 2px solid var(--moss-500);
+  background: var(--navy-900);
+  padding: var(--sp-4) var(--gutter-mobile);
+  text-align: center;
+}
+
+.airlock__prompt {
+  font-family: 'Silkscreen', ui-monospace, monospace;
+  font-size: var(--t-h3);
+  color: var(--moss-100);
+}
+
+.airlock__skip {
+  min-height: 44px;
+  padding: var(--sp-2) var(--sp-4);
+  border: 2px solid var(--moss-500);
+  color: var(--moss-100);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: var(--t-small);
+}
+.airlock__skip:hover {
+  background: var(--moss-500);
+  color: var(--navy-900);
+}
+
+/* ---------- the reveal ---------- */
+
+.airlock__wipe {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background-image: repeating-conic-gradient(var(--moss-500) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.airlock__wipe.is-day {
+  background-color: var(--paper);
+}
+.airlock__wipe.is-night {
+  background-color: var(--navy-900);
+}
+
+/* §S00 step 3: a vertical dither wipe, 12 steps over 700ms, uncovering the
+   hero that has been rendered underneath the whole time. */
+@keyframes airlock-wipe {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(100% 0 0 0);
+  }
+}
+
+/* Reduced motion gets a 100ms cross-fade instead (§S00). */
+@keyframes airlock-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ---------- §S00 edge case: very short viewport ---------- */
+@media (max-height: 500px) {
+  .airlock__sub {
+    display: none;
+  }
+  .airlock__mochi {
+    bottom: 84px;
+  }
+  .airlock__mochi svg {
+    width: 40px;
+    height: 53px;
+  }
+  .airlock__title {
+    font-size: var(--t-h3);
+  }
+  .airlock__door {
+    gap: var(--sp-2);
+    padding: var(--sp-4);
+  }
+}

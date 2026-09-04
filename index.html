@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#E8EDE0" />
+
+    <title>Ruby — UI/UX Designer &amp; Research Analyst | Yangon</title>
+    <meta
+      name="description"
+      content="Portfolio of Ruby (R), a UI/UX designer and research analyst in Yangon, Myanmar. End-to-end UX research, prototyping, and front-end work — in a pixel-art space station."
+    />
+
+    <!--
+      __SITE_URL__ is replaced at build time from the SITE_URL environment
+      variable (see vite.config.ts). The GitHub Actions workflow sets it from
+      the live Pages URL, so there is nothing to edit by hand.
+    -->
+    <link rel="canonical" href="__SITE_URL__/" />
+
+    <!-- §11 Open Graph + Twitter card -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="R // Moon Station" />
+    <meta property="og:title" content="Ruby — UI/UX Designer &amp; Research Analyst" />
+    <meta
+      property="og:description"
+      content="End-to-end UX research, prototyping, and front-end work — in a pixel-art space station. Based in Yangon, Myanmar."
+    />
+    <meta property="og:url" content="__SITE_URL__/" />
+    <meta property="og:image" content="__SITE_URL__/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Pixel-art space station with the R // Moon Station wordmark and MOCHI, a rabbit in a navy pressure suit."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ruby — UI/UX Designer &amp; Research Analyst" />
+    <meta
+      name="twitter:description"
+      content="End-to-end UX research, prototyping, and front-end work — in a pixel-art space station."
+    />
+    <meta name="twitter:image" content="__SITE_URL__/og-image.png" />
+
+    <!-- §11 favicon set -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+
+    <!-- §10 — preload the two display faces only; body face loads normally. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Pixelify+Sans:wght@400..700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Pixelify+Sans:wght@400..700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    />
+
+    <!--
+      §11 structured data. The email is deliberately absent: §S10 requires the
+      address be obfuscated, and JSON-LD is exactly what a harvester parses.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "__SITE_URL__/#ruby",
+            "name": "Ruby",
+            "alternateName": "R",
+            "jobTitle": "UI/UX Designer & Research Analyst",
+            "url": "__SITE_URL__/",
+            "sameAs": [
+              "https://linkedin.com/in/ruby-474067229",
+              "https://github.com/ruby9264"
+            ],
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Yangon",
+              "addressRegion": "Botahtaung",
+              "addressCountry": "MM"
+            },
+            "knowsLanguage": ["my", "en", "hi", "ja", "zh"],
+            "knowsAbout": [
+              "UI/UX Design",
+              "User Research",
+              "Prototyping",
+              "Design Systems",
+              "Information Architecture",
+              "Usability Testing"
+            ]
+          },
+          {
+            "@type": "CreativeWork",
+            "@id": "__SITE_URL__/#site",
+            "name": "R // Moon Station",
+            "headline": "Ruby — UI/UX Designer & Research Analyst",
+            "description": "Portfolio of Ruby (R), a UI/UX designer and research analyst in Yangon, Myanmar.",
+            "url": "__SITE_URL__/",
+            "image": "__SITE_URL__/og-image.png",
+            "inLanguage": "en",
+            "creator": { "@id": "__SITE_URL__/#ruby" }
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <script>
+      // Runs before first paint: no flash of the wrong palette, and the
+      // tokens are correct for anything that measures them on mount.
+      // Mirrors the logic in src/hooks/useSettings.tsx.
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('r-theme')
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
+          document.documentElement.setAttribute('data-theme', theme)
+          var meta = document.querySelector('meta[name="theme-color"]')
+          if (meta) meta.setAttribute('content', theme === 'dark' ? '#0B1524' : '#E8EDE0')
+
+          var settings = JSON.parse(localStorage.getItem('r-settings') || '{}')
+          if (settings.motion === 'reduced' || settings.motion === 'full') {
+            document.documentElement.setAttribute('data-motion', settings.motion)
+          }
+        } catch (e) {
+          /* private mode — React sets it on mount instead */
+        }
+      })()
+    </script>
+
+    <div id="root"></div>
+
+    <!--
+      §8 / §15 test 4 — with JS disabled a client-rendered SPA renders nothing,
+      so this is the floor: who Ruby is, what she does, and a way to make
+      contact. It is NOT full parity with the site; see docs/PHASE-8-NOTES.md
+      for the prerendering option that would give that.
+    -->
+    <noscript>
+      <style>
+        #root { display: none; }
+        .nojs {
+          max-width: 62ch;
+          margin: 0 auto;
+          padding: 48px 20px;
+          background: #e8ede0;
+          color: #14233a;
+          font-family: 'IBM Plex Mono', ui-monospace, monospace;
+          line-height: 1.65;
+        }
+        .nojs h1 { font-size: 2rem; letter-spacing: 0.04em; margin: 0 0 8px; }
+        .nojs h2 { font-size: 1.125rem; margin: 32px 0 8px; }
+        .nojs p, .nojs li { margin: 0 0 12px; }
+        .nojs a { color: #3e5c36; }
+        .nojs .kicker {
+          font-size: 0.8125rem;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #536251;
+        }
+        .nojs hr { border: 0; border-top: 2px solid #14233a; margin: 32px 0; }
+      </style>
+      <div class="nojs">
+        <p class="kicker">R // Moon Station</p>
+        <h1>Ruby</h1>
+        <p><strong>UI/UX Designer &amp; Research Analyst</strong></p>
+        <p>
+          I turn messy problems into clear, kind interfaces. Final-year Business Computing
+          student, based in Yangon, Myanmar — currently open to junior UI/UX and
+          design-research roles.
+        </p>
+
+        <hr />
+
+        <h2>Get in touch</h2>
+        <p>
+          Email:
+          <a href="mailto:rubytitanx&#64;gmail.com">rubytitanx&#64;gmail.com</a>
+        </p>
+        <p>
+          <a href="https://linkedin.com/in/ruby-474067229">LinkedIn</a> ·
+          <a href="https://github.com/ruby9264">GitHub</a> ·
+          <a href="/R-Ruby-CV-2026.pdf">Download CV (PDF)</a>
+        </p>
+        <p>Botahtaung, Yangon, Myanmar</p>
+
+        <hr />
+
+        <h2>What’s on this site</h2>
+        <ul>
+          <li>Selected work — EcoFootPrint, InfinityGames, retail and social platforms, database designs</li>
+          <li>Experience — Art of Living Myanmar, Standfirst Institute, private tutoring, Green Go</li>
+          <li>Skills — design, code, research and tools</li>
+          <li>Education — BSc Business Computing, NCC Level 5 Diploma, BA English Literature</li>
+          <li>Languages — Burmese, English, Hindi, Japanese, Chinese</li>
+        </ul>
+        <p>The full portfolio needs JavaScript enabled.</p>
+      </div>
+    </noscript>
+
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

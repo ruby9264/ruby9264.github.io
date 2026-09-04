@@ -1,0 +1,95 @@
+/* ============================================================
+   scroll.css — scroll-driven reveals.
+
+   NOTE: this is a deliberate departure from §4.3, which says
+   "Do NOT put a fade-and-slide-up entrance on every section"
+   and reserves reveals for S05, S06 and S09. Requested
+   explicitly; see docs/PHASE-9-NOTES.md.
+
+   Three rules keep it from becoming the thing §4.3 warns about:
+     1. every reveal is stepped, never eased (§2.1 rule 7)
+     2. the travel is 12px and the range is short, so nothing is
+        still moving by the time you read it
+     3. it is off entirely under reduced motion
+   ============================================================ */
+
+/*
+  EVERYTHING is inside @supports. `animation-timeline` is Chromium-only
+  today (Safari and Firefox do not ship it), and a browser without it must
+  never see the `from` state — otherwise the page loads at opacity 0 and
+  stays there. Guarding here means unsupported browsers simply get the
+  finished layout, which is the correct fallback rather than a broken one.
+*/
+@supports (animation-timeline: view()) {
+  @keyframes sda-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /*
+    Applied one level deep only. `.panel` animates, and a list item animates
+    only when it does not itself contain a panel — otherwise a cert card
+    would fade in inside a list item that is also fading in, and the two
+    opacities would multiply.
+  */
+  #main .panel,
+  #main li:not(:has(.panel)),
+  #main section > div > :is(h2, h3, p) {
+    /*
+      Longhands, not the `animation` shorthand. The shorthand resets
+      animation-duration to 0s, and a scroll-driven animation with a 0s
+      duration finishes instantly at the start of its range — every element
+      just sat at its end state and nothing appeared to animate at all.
+      `auto` is the duration that means "span the range".
+    */
+    animation-name: sda-reveal;
+    animation-fill-mode: both;
+    animation-duration: auto;
+    animation-timeline: view();
+    /* Finishes well before the element reaches reading position. */
+    animation-range: entry 5% entry 55%;
+    /* §2.1 rule 7 — stepped. jump-none so it actually reaches opacity 1. */
+    animation-timing-function: steps(5, jump-none);
+  }
+
+  /* A gentle cascade across grid rows, so a 4-up grid doesn't pop as one. */
+  #main li:nth-child(2n):not(:has(.panel)) {
+    animation-range: entry 10% entry 60%;
+  }
+  #main li:nth-child(3n):not(:has(.panel)) {
+    animation-range: entry 14% entry 64%;
+  }
+
+  /*
+    Opt-outs. These already move, or already have their own choreography,
+    and a second animation on top would fight them:
+      - #home       the S01 load sequence (§S01)
+      - the ticker  already scrolling (§S02)
+      - the S05 pinned track, which IS a scroll-driven animation already
+  */
+  .sda-none,
+  .sda-none * {
+    animation-name: none !important;
+    animation-timeline: auto !important;
+  }
+
+  /* §4.3 / §4.5 — off for reduced motion, from either signal. */
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion='full']) #main *,
+    :root:not([data-motion='full']) #main {
+      animation-name: none !important;
+      animation-timeline: auto !important;
+    }
+  }
+  html[data-motion='reduced'] #main *,
+  html[data-motion='reduced'] #main {
+    animation-name: none !important;
+    animation-timeline: auto !important;
+  }
+}

@@ -1,0 +1,118 @@
+/* ============================================================
+   cursor.css — §4.1.
+   Every rule is gated on BOTH the settings toggle (data-cursor)
+   and data-cursor-ready, which PixelCursor only sets once the
+   images actually generated. If JS is off, the canvas is blocked,
+   or the toggle is off, none of this applies and the visitor keeps
+   a normal system pointer.
+   Every declaration also ends in a real keyword fallback.
+   ============================================================ */
+
+html[data-cursor='custom'][data-cursor-ready],
+html[data-cursor='custom'][data-cursor-ready] body {
+  cursor: var(--cur-default), auto;
+}
+
+html[data-cursor='custom'][data-cursor-ready] a[href],
+html[data-cursor='custom'][data-cursor-ready] button,
+html[data-cursor='custom'][data-cursor-ready] summary,
+html[data-cursor='custom'][data-cursor-ready] label,
+html[data-cursor='custom'][data-cursor-ready] select,
+html[data-cursor='custom'][data-cursor-ready] [role='button'],
+html[data-cursor='custom'][data-cursor-ready] [role='switch'],
+html[data-cursor='custom'][data-cursor-ready] [role='tab'],
+html[data-cursor='custom'][data-cursor-ready] [role='radio'],
+html[data-cursor='custom'][data-cursor-ready] [role='menuitem'] {
+  cursor: var(--cur-pointer), pointer;
+}
+
+html[data-cursor='custom'][data-cursor-ready] input:not([type='button']):not([type='submit']):not([type='checkbox']):not([type='radio']),
+html[data-cursor='custom'][data-cursor-ready] textarea,
+html[data-cursor='custom'][data-cursor-ready] [contenteditable='true'] {
+  cursor: var(--cur-text), text;
+}
+
+/* The S06 card deck opts in with data-grab. */
+html[data-cursor='custom'][data-cursor-ready] [data-grab] {
+  cursor: var(--cur-grab), grab;
+}
+html[data-cursor='custom'][data-cursor-ready] [data-grab]:active,
+html[data-cursor='custom'][data-cursor-ready] [data-grab][data-grabbing='true'] {
+  cursor: var(--cur-grabbing), grabbing;
+}
+
+/* Disabled and busy win over the rules above. */
+html[data-cursor='custom'][data-cursor-ready] :disabled,
+html[data-cursor='custom'][data-cursor-ready] [aria-disabled='true'] {
+  cursor: var(--cur-disabled), not-allowed;
+}
+html[data-cursor='custom'][data-cursor-ready] [aria-busy='true'] {
+  cursor: var(--cur-loading), progress;
+}
+
+/* ---------- trail companion ---------- */
+.pixel-cursor-trail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  background: var(--brand);
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Belt and braces: even if the component's own guards were bypassed, the
+   trail is never shown on a touch device or under reduced motion. */
+@media (pointer: coarse) {
+  .pixel-cursor-trail {
+    display: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion='full']) .pixel-cursor-trail {
+    display: none !important;
+  }
+}
+[data-motion='reduced'] .pixel-cursor-trail {
+  display: none !important;
+}
+
+/* ---------- MOCHI ---------- */
+
+/* Idle breathing. Stepped, so it reads as a sprite loop rather than a tween
+   (§2.1 rule 7). The global reduced-motion contract stops it. */
+@keyframes mochi-breathe {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+.mochi-breathe {
+  animation: mochi-breathe 3s steps(2) infinite;
+}
+
+/* Slow drift, for MOCHI adrift on the 404. */
+@keyframes mochi-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(4px, -4px);
+  }
+  50% {
+    transform: translate(0, -8px);
+  }
+  75% {
+    transform: translate(-4px, -4px);
+  }
+}
+.mochi-drift {
+  animation: mochi-drift 6s steps(4) infinite;
+}

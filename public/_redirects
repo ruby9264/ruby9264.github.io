@@ -1,0 +1,3 @@
+# SPA fallback — every path is served index.html so react-router can render
+# the route (including S12) instead of Netlify returning its own 404.
+/*  /index.html  200
