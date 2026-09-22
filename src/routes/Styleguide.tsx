@@ -49,22 +49,24 @@ function Swatch({ token, name }: { token: string; name: string }) {
   )
 }
 
+/* The eight spec colours, both moods at once — these read the same in
+   either theme, which is what lets S00 render day and night side by side. */
 const CORE_TOKENS = [
-  ['--moss-900', 'moss 900'],
-  ['--moss-700', 'moss 700'],
-  ['--moss-500', 'moss 500'],
-  ['--moss-300', 'moss 300'],
-  ['--moss-100', 'moss 100'],
-  ['--navy-900', 'navy 900'],
-  ['--navy-700', 'navy 700'],
-  ['--navy-500', 'navy 500'],
-  ['--navy-300', 'navy 300'],
-  ['--navy-100', 'navy 100'],
-  ['--paper', 'paper'],
-  ['--paper-2', 'paper 2'],
+  ['--day-bg', 'day · bg primary'],
+  ['--day-gold', 'day · accent gold'],
+  ['--day-sec', 'day · accent secondary'],
+  ['--day-text', 'day · text primary'],
+  ['--day-raised', 'day · raised'],
+  ['--day-sunken', 'day · sunken'],
+  ['--day-shadow', 'day · shadow'],
+  ['--night-bg', 'night · bg primary'],
+  ['--night-gold', 'night · accent gold'],
+  ['--night-sec', 'night · accent secondary'],
+  ['--night-text', 'night · text primary'],
+  ['--night-raised', 'night · raised'],
+  ['--night-sunken', 'night · sunken'],
+  ['--night-shadow', 'night · shadow'],
   ['--star', 'star'],
-  ['--amber-500', 'amber 500'],
-  ['--amber-700', 'amber 700'],
   ['--error', 'error'],
   ['--success', 'success'],
   ['--warn', 'warn'],
@@ -87,6 +89,14 @@ const THEME_TOKENS = [
   ['--error-ink', 'error ink *'],
   ['--ink-placeholder', 'ink placeholder *'],
   ['--focus', 'focus *'],
+  ['--bg-primary', 'bg primary'],
+  ['--accent-gold', 'accent gold'],
+  ['--accent-secondary', 'accent secondary'],
+  ['--text-primary', 'text primary'],
+  ['--lotus-petal', 'lotus petal *'],
+  ['--lotus-petal-deep', 'lotus petal deep *'],
+  ['--lotus-core', 'lotus core *'],
+  ['--lotus-pad', 'lotus pad *'],
 ] as const
 
 const SUBJECT_OPTIONS = [

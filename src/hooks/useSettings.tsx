@@ -30,22 +30,34 @@ export type Settings = {
   motion: MotionSetting
   /** §4.1 — the custom cursor must always be escapable. */
   cursor: boolean
-  /** §4.5 — default OFF. Audio is never autoplayed. */
+  /**
+   * Ambient background music.
+   *
+   * §4.5 says "default OFF, audio is never autoplayed"; Ruby asked for the
+   * reverse, so this now defaults ON and AmbientAudio starts the track as
+   * early as the browser permits. The escape hatches the criterion actually
+   * needs are the settings menu and MOCHI's menu — see AmbientAudio for the
+   * autoplay-policy handling and the WCAG 1.4.2 note.
+   */
   sound: boolean
 }
 
 const THEME_KEY = 'r-theme' // §4.2 names this key; S00 reads it.
 const SETTINGS_KEY = 'r-settings'
 
+/* --bg-primary for each mood, literal because <meta> cannot read a token.
+   The pre-paint script in index.html carries the same two values. */
 const META_COLOR: Record<Theme, string> = {
-  light: '#E8EDE0',
-  dark: '#0B1524',
+  light: '#FFF2D4',
+  dark: '#234151',
 }
 
 const DEFAULTS: Omit<Settings, 'theme'> = {
   motion: 'system',
   cursor: true,
-  sound: false,
+  // On by default — see the note on Settings['sound']. A visitor who has
+  // already turned it off keeps that: readSettings() prefers what is stored.
+  sound: true,
 }
 
 export function storedTheme(): Theme | null {

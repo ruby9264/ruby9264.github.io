@@ -6,109 +6,162 @@ type MarqueeProps = {
   /** One copy of the content. The component handles duplication. */
   children: ReactNode
   label: string
-  /** Seconds for one full pass of the track. */
-  duration?: number
+  /**
+   * Scroll speed in CSS px per second, not a duration. A duration would make
+   * a short row travel slowly and a long one race, which is exactly wrong
+   * when several rows scroll side by side — the eye reads them as one
+   * surface and any difference in speed reads as a fault.
+   */
+  speed?: number
+  /** Right to left by default; `reverse` runs the track the other way. */
+  reverse?: boolean
+  /**
+   * Controlled pause. When supplied the component stops managing its own
+   * pause state and renders no button — the caller owns both, which is how
+   * several rows share one control instead of growing one button each.
+   */
+  paused?: boolean
   className?: string
-  /** Rendered instead of the marquee under reduced motion. */
-  staticFallback?: ReactNode
 }
 
 /**
- * §S02 — an infinite marquee that is actually pausable.
+ * An infinite marquee that is actually seamless, and actually pausable.
  *
- * The spec says pause "on hover and on focus-within". Hover alone is not a
- * WCAG 2.2.2 mechanism, and focus-within can never fire here because the
- * ticker contains no focusable content — so there is also a real pause
- * button. Without it the section would fail the very criterion the spec
- * cites. See docs/PHASE-4-NOTES.md.
+ * SEAM. The track holds `copies` copies of the children and shifts by
+ * exactly one of them — `-100 / copies` percent — before repeating. The
+ * shared `marquee-scroll` keyframe hardcodes -50%, which is only one copy
+ * when there are exactly two; at three or more it lands mid-copy and the row
+ * visibly jumps every lap. This uses `marquee-shift`, whose endpoint is a
+ * custom property set from here. (Starfield still uses the old keyframe, and
+ * correctly: it always has exactly two copies.)
+ *
+ * PAUSE. §S02 says pause "on hover and on focus-within". Hover alone is not
+ * a WCAG 2.2.2 mechanism, and focus-within cannot fire in a ticker with no
+ * focusable content — so there is a real button too. Without it the section
+ * would fail the criterion the spec cites. See docs/PHASE-4-NOTES.md.
  */
 export function Marquee({
   children,
   label,
-  duration = 40,
+  speed = 24,
+  reverse = false,
+  paused,
   className,
-  staticFallback,
 }: MarqueeProps) {
   const reducedMotion = useReducedMotion()
-  const [paused, setPaused] = useState(false)
+  const [selfPaused, setSelfPaused] = useState(false)
   const [copies, setCopies] = useState(2)
-  const trackRef = useRef<HTMLDivElement>(null)
+  const [copyWidth, setCopyWidth] = useState(0)
+  const copyRef = useRef<HTMLDivElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
 
+  const controlled = paused !== undefined
+  const isPaused = controlled ? paused : selfPaused
+
   /**
-   * §S02 edge case: if one copy is narrower than the viewport the track
-   * leaves a gap. Duplicate until it is at least twice the viewport.
+   * Measured with a ResizeObserver on the first copy rather than by reading
+   * widths on resize. The row's width also changes when the two webfonts
+   * arrive, and a measurement taken before that leaves both the duration and
+   * the copy count wrong — the copies too few to cover the viewport, which
+   * shows as a gap sliding past.
    */
   useEffect(() => {
     if (reducedMotion) return
+    const copy = copyRef.current
+    const viewport = viewportRef.current
+    if (!copy || !viewport) return
+
     const measure = () => {
-      const track = trackRef.current
-      const viewport = viewportRef.current
-      if (!track || !viewport) return
-      const oneCopy = track.scrollWidth / copies
-      if (oneCopy <= 0) return
-      const needed = Math.max(2, Math.ceil((viewport.clientWidth * 2) / oneCopy))
-      if (needed !== copies) setCopies(needed)
+      const w = copy.getBoundingClientRect().width
+      if (w <= 0) return
+      setCopyWidth(w)
+      // Enough copies to cover the viewport twice: one fills it, the next is
+      // already in place when the shift wraps.
+      setCopies(Math.max(2, Math.ceil((viewport.clientWidth * 2) / w)))
     }
+
     measure()
-    window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
-  }, [copies, reducedMotion, children])
+    const ro = new ResizeObserver(measure)
+    ro.observe(copy)
+    ro.observe(viewport)
+    return () => ro.disconnect()
+  }, [reducedMotion, children])
 
   if (reducedMotion) {
     return (
       <div role="marquee" aria-label={label} className={className}>
-        {staticFallback ?? children}
+        {children}
       </div>
     )
   }
+
+  // Time for the track to travel one copy. Constant px/s whatever the row
+  // holds. Zero until the first measurement lands, which is also the frame
+  // where a duration would be meaningless.
+  const duration = copyWidth > 0 ? copyWidth / speed : 0
 
   return (
     <div
       role="marquee"
       aria-label={label}
       className={cx('relative', className)}
-      onPointerEnter={() => setPaused(true)}
-      onPointerLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
+      onPointerEnter={controlled ? undefined : () => setSelfPaused(true)}
+      onPointerLeave={controlled ? undefined : () => setSelfPaused(false)}
     >
-      <div ref={viewportRef} className="overflow-hidden">
+      <div ref={viewportRef} className="h-full overflow-hidden">
         <div
-          ref={trackRef}
-          className="flex w-max"
+          className="flex h-full w-max"
+          // Longhands, never the `animation` shorthand. The play state has to
+          // be updated on its own every time the pause toggles, and React
+          // warns — correctly — that writing a shorthand and one of its
+          // longhands from the same style object leaves the result depending
+          // on property order. scroll.css avoids the shorthand for its own
+          // reason; this is the second one.
           style={{
-            animation: `marquee-scroll ${duration}s linear infinite`,
-            animationPlayState: paused ? 'paused' : 'running',
+            // One copy's worth of travel, whatever the copy count.
+            ['--marquee-shift' as string]: `-${100 / copies}%`,
+            animationName: duration ? 'marquee-shift' : undefined,
+            animationDuration: duration ? `${duration}s` : undefined,
+            animationTimingFunction: 'linear',
+            animationIterationCount: 'infinite',
+            animationDirection: reverse ? 'reverse' : 'normal',
+            animationPlayState: isPaused ? 'paused' : 'running',
           }}
         >
           {Array.from({ length: copies }, (_, i) => (
             // Only the first copy is read; the rest exist to fill the loop.
-            <div key={i} className="flex shrink-0" aria-hidden={i > 0 || undefined}>
+            <div
+              key={i}
+              ref={i === 0 ? copyRef : undefined}
+              className="flex h-full shrink-0"
+              aria-hidden={i > 0 || undefined}
+            >
               {children}
             </div>
           ))}
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setPaused((p) => !p)}
-        aria-pressed={paused}
-        className={cx(
-          'absolute right-0 top-0 flex h-full w-[44px] items-center justify-center',
-          'border-l-2 border-[color:var(--line)] bg-[color:var(--bg-raised)]',
-          'text-[color:var(--ink)]',
-        )}
-      >
-        <span className="sr-only">{paused ? 'Play the status ticker' : 'Pause the status ticker'}</span>
-        {paused ? <PlayGlyph /> : <PauseGlyph />}
-      </button>
+      {controlled ? null : (
+        <button
+          type="button"
+          onClick={() => setSelfPaused((p) => !p)}
+          aria-pressed={selfPaused}
+          className={cx(
+            'absolute right-0 top-0 flex h-full w-[44px] items-center justify-center',
+            'border-l-2 border-[color:var(--line)] bg-[color:var(--bg-raised)]',
+            'text-[color:var(--ink)]',
+          )}
+        >
+          <span className="sr-only">{selfPaused ? `Play ${label}` : `Pause ${label}`}</span>
+          {selfPaused ? <PlayGlyph /> : <PauseGlyph />}
+        </button>
+      )}
     </div>
   )
 }
 
-function PauseGlyph() {
+export function PauseGlyph() {
   return (
     <svg viewBox="0 0 12 12" width="12" height="12" fill="currentColor" shapeRendering="crispEdges" aria-hidden="true">
       <rect x="2" y="1" width="3" height="10" />
@@ -117,7 +170,7 @@ function PauseGlyph() {
   )
 }
 
-function PlayGlyph() {
+export function PlayGlyph() {
   return (
     <svg viewBox="0 0 12 12" width="12" height="12" fill="currentColor" shapeRendering="crispEdges" aria-hidden="true">
       <rect x="2" y="1" width="2" height="10" />

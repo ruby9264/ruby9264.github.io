@@ -107,7 +107,7 @@ a {
   transform: translateY(-200%);
   background: var(--bg-raised);
   color: var(--ink);
-  border: 2px solid var(--line);
+  border: var(--border) solid var(--line);
   box-shadow: 4px 4px 0 var(--shadow);
   padding: var(--sp-3) var(--sp-4);
   font-family: 'Pixelify Sans', ui-monospace, monospace;

@@ -185,10 +185,13 @@ export function S00Airlock({ onDone }: { onDone: () => void }) {
             hovered === 'day' ? 'right-0' : 'left-0',
           )}
           aria-hidden="true"
-          // Dim with the ink of whichever palette has flooded across, so the
-          // texture darkens on day and lightens on night rather than
-          // inheriting whatever --line happens to be.
-          style={{ ['--dither-ink' as string]: hovered === 'day' ? 'var(--navy-700)' : 'var(--moss-500)' }}
+          // Dim with the *idle* mood's own shadow. Both palettes are
+          // dark-ground, so inking one half with the other's accent would
+          // lighten it — the opposite of dimming.
+          style={{
+            ['--dither-ink' as string]:
+              hovered === 'day' ? 'var(--night-shadow)' : 'var(--day-shadow)',
+          }}
         />
       ) : null}
 
@@ -201,8 +204,8 @@ export function S00Airlock({ onDone }: { onDone: () => void }) {
             A decorative copy inked for the day palette, clipped to exactly the
             same edge as the day background. The labels therefore change colour
             *at the flood edge* rather than all at once — without this, the far
-            door sits at moss-100 on paper (1.06:1) for the whole 400ms of the
-            wipe. aria-hidden with pointer-events off, so it adds no tab stop.
+            door sits at night text on day bg — cream on cream, 1.03:1 — for
+            the whole 400ms of the wipe. aria-hidden with pointer-events off, so it adds no tab stop.
           */}
           <div
             className="airlock__doors airlock__doors--day airlock__doors--ghost"
@@ -222,7 +225,9 @@ export function S00Airlock({ onDone }: { onDone: () => void }) {
         </div>
 
         <footer className="airlock__bar">
-          <p className="hud text-[color:var(--moss-300)]">{AIRLOCK.kicker}</p>
+          {/* The bar is night ground throughout, so its kicker takes the
+              night accent: orchid on charcoal, 6.47:1. */}
+          <p className="hud text-[color:var(--night-sec)]">{AIRLOCK.kicker}</p>
           {/* Not an <h1>: the hero already owns the page's only one (§9), and
               the dialog's aria-label already states its purpose. */}
           <p className="airlock__prompt">{AIRLOCK.prompt}</p>

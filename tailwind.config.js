@@ -23,23 +23,29 @@ export default {
     },
     extend: {
       colors: {
-        moss: {
-          900: 'var(--moss-900)',
-          700: 'var(--moss-700)',
-          500: 'var(--moss-500)',
-          300: 'var(--moss-300)',
-          100: 'var(--moss-100)',
+        // The two moods, theme-independent. Only S00's airlock needs these —
+        // it is the one place that renders both palettes at the same instant.
+        day: {
+          bg: 'var(--day-bg)',
+          gold: 'var(--day-gold)',
+          sec: 'var(--day-sec)',
+          text: 'var(--day-text)',
+          raised: 'var(--day-raised)',
+          sunken: 'var(--day-sunken)',
         },
-        navy: {
-          900: 'var(--navy-900)',
-          700: 'var(--navy-700)',
-          500: 'var(--navy-500)',
-          300: 'var(--navy-300)',
-          100: 'var(--navy-100)',
+        night: {
+          bg: 'var(--night-bg)',
+          gold: 'var(--night-gold)',
+          sec: 'var(--night-sec)',
+          text: 'var(--night-text)',
+          raised: 'var(--night-raised)',
+          sunken: 'var(--night-sunken)',
         },
-        amber: { 500: 'var(--amber-500)', 700: 'var(--amber-700)' },
-        paper: 'var(--paper)',
-        'paper-2': 'var(--paper-2)',
+        // The four spec names under whichever mood is active.
+        'bg-primary': 'var(--bg-primary)',
+        'accent-gold': 'var(--accent-gold)',
+        'accent-secondary': 'var(--accent-secondary)',
+        'text-primary': 'var(--text-primary)',
         star: 'var(--star)',
         // Theme-mapped semantic tokens (§2.2)
         bg: 'var(--bg)',

@@ -5,6 +5,8 @@ import { MobileDock } from './MobileDock'
 import { Footer } from './Footer'
 import { FloatingBot } from '@/components/mochi/FloatingBot'
 import { PixelCursor } from '@/components/cursor/PixelCursor'
+import { LotusField } from '@/components/lotus/LotusField'
+import { AmbientAudio } from '@/components/audio/AmbientAudio'
 import { S00Airlock } from '@/components/sections/S00Airlock'
 import { storedTheme } from '@/hooks/useSettings'
 import { NAV_IDS } from '@/data/nav'
@@ -76,9 +78,18 @@ export function SiteLayout({
       {showDock ? <MobileDock activeId={activeId} /> : null}
       {showBot ? <FloatingBot /> : null}
 
+      {/* Ambient, and decorative in the aria sense — it plants itself in the
+          page gutters and stays out of the reading column. Mounted in the
+          shell so the field is continuous across routes. */}
+      <LotusField />
+
       {/* Renders the trail square; the cursor images themselves are set as
           custom properties on <html>. Guards live inside the component. */}
       <PixelCursor />
+
+      {/* Renders nothing. Lives in the shell rather than in App so the
+          /styleguide route — a build tool, not the site — stays silent. */}
+      <AmbientAudio />
 
       {gateOpen ? <S00Airlock onDone={() => setGateOpen(false)} /> : null}
     </>

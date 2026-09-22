@@ -1,8 +1,9 @@
 /* ============================================================
    airlock.css — §S00.
-   The gate shows both palettes at once, so it deliberately uses
-   the CORE tokens rather than the theme-mapped ones: --paper and
-   --navy-900 mean the same thing whichever theme is active.
+   The gate shows both moods at once, so it deliberately uses the
+   theme-INDEPENDENT palette tokens rather than the mapped ones:
+   --day-bg and --night-bg mean the same thing whichever theme is
+   active, where --bg has no single answer while the gate is open.
    ============================================================ */
 
 /* §S00 edge case: hidden by default, revealed only once JS sets the
@@ -24,7 +25,7 @@ html[data-airlock='open'] .airlock {
 .airlock__night {
   position: absolute;
   inset: 0;
-  background: var(--navy-900);
+  background: var(--night-bg);
 }
 
 /* Clipped over the night layer. Moving the clip edge is what makes one
@@ -32,7 +33,7 @@ html[data-airlock='open'] .airlock {
 .airlock__day {
   position: absolute;
   inset: 0;
-  background: var(--paper);
+  background: var(--day-bg);
 }
 
 .airlock__seam {
@@ -41,7 +42,7 @@ html[data-airlock='open'] .airlock {
   bottom: 0;
   width: 8px;
   margin-left: -4px;
-  --dither-ink: var(--moss-500);
+  --dither-ink: var(--night-sec);
 }
 
 /* §S00: the idle half dims to dither-25. */
@@ -51,7 +52,10 @@ html[data-airlock='open'] .airlock {
   bottom: 0;
   width: 50%;
   pointer-events: none;
-  --dither-ink: var(--navy-900);
+  /* Set per side from S00Airlock — both moods are dark-ground now, so an
+     idle half is dimmed with its own shadow rather than the other mood's
+     ink, which would lighten it instead. */
+  --dither-ink: var(--night-shadow);
 }
 
 /* ---------- layout ---------- */
@@ -97,12 +101,12 @@ html[data-airlock='open'] .airlock {
 }
 
 /* Ink is set on the layer, not the door, so it follows the flood edge.
-   Measured: navy-700 on paper 13.24:1, moss-100 on navy-900 13.70:1. */
+   Measured: day text on day bg 9.71:1, night text on night bg 9.09:1. */
 .airlock__doors--day {
-  color: var(--navy-700);
+  color: var(--day-text);
 }
 .airlock__doors--night {
-  color: var(--moss-100);
+  color: var(--night-text);
 }
 
 /* §S00 active state: the door presses in 4px and its shadow collapses. */
@@ -127,11 +131,12 @@ html[data-airlock='open'] .airlock {
   font-size: var(--t-body);
   opacity: 1;
 }
+/* 7.11:1 and 6.64:1 on their own grounds. */
 .airlock__doors--day .airlock__sub {
-  color: var(--navy-500);
+  color: var(--day-soft);
 }
 .airlock__doors--night .airlock__sub {
-  color: var(--moss-300);
+  color: var(--night-soft);
 }
 
 .airlock__enter {
@@ -142,7 +147,7 @@ html[data-airlock='open'] .airlock {
   justify-content: center;
   margin-top: var(--sp-4);
   padding: var(--sp-3) var(--sp-6);
-  border: 2px solid currentColor;
+  border: var(--border) solid currentColor;
   box-shadow: 4px 4px 0 currentColor;
   font-family: 'Pixelify Sans', ui-monospace, monospace;
   font-weight: 600;
@@ -161,7 +166,7 @@ html[data-airlock='open'] .airlock {
 
 /* §S00 reduced motion: a static 2px highlight replaces the flood. */
 .airlock__enter.is-highlighted {
-  outline: 2px solid currentColor;
+  outline: var(--border) solid currentColor;
   outline-offset: 4px;
 }
 
@@ -183,8 +188,8 @@ html[data-airlock='open'] .airlock {
   align-items: center;
   justify-content: center;
   gap: var(--sp-3) var(--sp-8);
-  border-top: 2px solid var(--moss-500);
-  background: var(--navy-900);
+  border-top: var(--border) solid var(--night-sec);
+  background: var(--night-bg);
   padding: var(--sp-4) var(--gutter-mobile);
   text-align: center;
 }
@@ -192,20 +197,20 @@ html[data-airlock='open'] .airlock {
 .airlock__prompt {
   font-family: 'Silkscreen', ui-monospace, monospace;
   font-size: var(--t-h3);
-  color: var(--moss-100);
+  color: var(--night-text);
 }
 
 .airlock__skip {
   min-height: 44px;
   padding: var(--sp-2) var(--sp-4);
-  border: 2px solid var(--moss-500);
-  color: var(--moss-100);
+  border: var(--border) solid var(--night-sec);
+  color: var(--night-text);
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
   font-size: var(--t-small);
 }
 .airlock__skip:hover {
-  background: var(--moss-500);
-  color: var(--navy-900);
+  background: var(--night-sec);
+  color: var(--night-bg);
 }
 
 /* ---------- the reveal ---------- */
@@ -214,14 +219,18 @@ html[data-airlock='open'] .airlock {
   position: absolute;
   inset: 0;
   z-index: 10;
-  background-image: repeating-conic-gradient(var(--moss-500) 0% 25%, transparent 0% 50%);
+  /* The wipe is inked with the accent of the mood being entered, so the
+     700ms of dither already belongs to the palette behind it. */
+  background-image: repeating-conic-gradient(var(--wipe-ink) 0% 25%, transparent 0% 50%);
   background-size: 4px 4px;
 }
 .airlock__wipe.is-day {
-  background-color: var(--paper);
+  --wipe-ink: var(--day-sec);
+  background-color: var(--day-bg);
 }
 .airlock__wipe.is-night {
-  background-color: var(--navy-900);
+  --wipe-ink: var(--night-sec);
+  background-color: var(--night-bg);
 }
 
 /* §S00 step 3: a vertical dither wipe, 12 steps over 700ms, uncovering the

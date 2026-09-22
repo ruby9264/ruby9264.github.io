@@ -1,31 +1,72 @@
 /**
- * §S02 — the status ticker, one continuous loop separated by pixel stars.
+ * §S02 — the status board. Four rows, each a category label followed by its
+ * own items, every item carrying a tiny pixel glyph.
  *
- * `parts` exists because §9 requires a `lang` attribute on the CJK and
- * Devanagari strings; a screen reader that reads 日本語 with an English voice
- * produces nonsense. Items without `parts` are plain English.
+ * Each row scrolls as its own continuous loop, so the content of a row is
+ * written here as one flat list and the section handles the repetition.
+ * Text is stored in natural case; the section upper-cases it in CSS, which
+ * keeps the string readable to a screen reader (§13 puts all-caps in the
+ * chrome layer only).
  */
 
-export type TickerPart = { text: string; lang?: string }
-export type TickerItem = { text: string; parts?: TickerPart[] }
+export type TickerIconName =
+  | 'design'
+  | 'data'
+  | 'tech'
+  | 'business'
+  | 'languages'
+  | 'curious'
+  | 'analytical'
+  | 'rabbit'
+  | 'anime'
+  | 'manga'
+  | 'gaming'
+  | 'reading'
+  | 'films'
+  | 'analysing'
+  | 'learning'
+  | 'experimenting'
 
-export const TICKER_ITEMS: TickerItem[] = [
-  { text: 'STATUS: open to junior UI/UX roles' },
-  { text: 'based in Yangon, Myanmar — GMT+6:30' },
-  { text: 'currently: BSc Business Computing & Information Systems, final year' },
+export type TickerItem = { text: string; icon: TickerIconName }
+export type TickerRow = { label: string; items: TickerItem[] }
+
+export const TICKER_ROWS: TickerRow[] = [
   {
-    text: 'speaks: Burmese · English · 中文 · 日本語 · हिन्दी',
-    parts: [
-      { text: 'speaks: Burmese · English · ' },
-      { text: '中文', lang: 'zh' },
-      { text: ' · ' },
-      { text: '日本語', lang: 'ja' },
-      { text: ' · ' },
-      { text: 'हिन्दी', lang: 'hi' },
+    label: 'interests:',
+    items: [
+      { text: 'design', icon: 'design' },
+      { text: 'data', icon: 'data' },
+      { text: 'technology', icon: 'tech' },
+      { text: 'business', icon: 'business' },
+      { text: 'languages', icon: 'languages' },
     ],
   },
-  { text: 'now learning: BI & Analytics' },
-  { text: 'thanks for stopping by my space' },
+  {
+    label: 'naturally:',
+    items: [
+      { text: 'curious', icon: 'curious' },
+      { text: 'analytical', icon: 'analytical' },
+      { text: 'always down a rabbit hole', icon: 'rabbit' },
+    ],
+  },
+  {
+    label: 'hobbies:',
+    items: [
+      { text: 'anime', icon: 'anime' },
+      { text: 'manga & comics', icon: 'manga' },
+      { text: 'gaming', icon: 'gaming' },
+      { text: 'reading', icon: 'reading' },
+      { text: 'films & series', icon: 'films' },
+    ],
+  },
+  {
+    label: 'often:',
+    items: [
+      { text: 'analysing things', icon: 'analysing' },
+      { text: 'learning something random', icon: 'learning' },
+      { text: 'experimenting with new ideas', icon: 'experimenting' },
+    ],
+  },
 ]
 
-export const TICKER_LABEL = 'Current status'
+export const TICKER_LABEL = 'About Ruby, at a glance'

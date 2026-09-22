@@ -123,6 +123,40 @@ export function GlyphMoon(props: GlyphProps) {
   )
 }
 
+/** Speaker with two waves — sound is currently ON, so this reads "mute". */
+export function GlyphSpeaker(props: GlyphProps) {
+  return (
+    <svg viewBox="0 0 16 16" width="16" height="16" {...base(props)}>
+      {/* cone */}
+      <rect x="1" y="6" width="2" height="4" />
+      <rect x="3" y="5" width="2" height="6" />
+      <rect x="5" y="3" width="2" height="10" />
+      <rect x="7" y="1" width="2" height="14" />
+      {/* waves */}
+      <rect x="10" y="5" width="2" height="6" />
+      <rect x="13" y="3" width="2" height="10" />
+    </svg>
+  )
+}
+
+/** The same cone with a cross — sound is OFF, so this reads "play". */
+export function GlyphSpeakerMuted(props: GlyphProps) {
+  return (
+    <svg viewBox="0 0 16 16" width="16" height="16" {...base(props)}>
+      <rect x="1" y="6" width="2" height="4" />
+      <rect x="3" y="5" width="2" height="6" />
+      <rect x="5" y="3" width="2" height="10" />
+      <rect x="7" y="1" width="2" height="14" />
+      {/* cross, both diagonals on the 2px grid */}
+      <rect x="10" y="5" width="2" height="2" />
+      <rect x="12" y="7" width="2" height="2" />
+      <rect x="14" y="9" width="2" height="2" />
+      <rect x="14" y="5" width="2" height="2" />
+      <rect x="10" y="9" width="2" height="2" />
+    </svg>
+  )
+}
+
 /** External link — a box with an arrow leaving it. Marks tags that open Figma. */
 export function GlyphExternal(props: GlyphProps) {
   return (

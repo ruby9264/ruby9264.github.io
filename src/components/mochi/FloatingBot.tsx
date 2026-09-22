@@ -8,9 +8,11 @@ import { useScrollVelocity } from '@/hooks/useScrollVelocity'
 import { useSectionInView } from '@/hooks/useSectionInView'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useTheme } from '@/hooks/useTheme'
+import { useSettings } from '@/hooks/useSettings'
 import { scrollToId } from '@/hooks/useLenis'
 import { PROFILE } from '@/data/profile'
 import { IconDoc } from '@/components/pixel/NavIcons'
+import { GlyphSpeaker, GlyphSpeakerMuted } from '@/components/pixel/PixelGlyph'
 import { CV_AVAILABLE } from '@/data/site'
 
 /** §3.2 state machine. Order in this union is not priority — see resolve(). */
@@ -67,6 +69,7 @@ export function FloatingBot() {
   const sectionInView = useSectionInView(SECTION_IDS)
   const reducedMotion = useReducedMotion()
   const { theme, toggleTheme } = useTheme()
+  const { sound, setSound } = useSettings()
 
   /* ---- resolve the current state, highest priority first (§3.2) ---- */
   const state: BotState =
@@ -220,7 +223,13 @@ export function FloatingBot() {
         'bottom-[calc(72px+env(safe-area-inset-bottom))] md:bottom-6',
       )}
     >
-      {/* Quick nav — max 5 items (§3.2) */}
+      {/*
+        Quick nav. §3.2 caps this at five items and there are now six: the
+        music starts on its own, so the way to stop it has to be somewhere a
+        visitor already is, and MOCHI is where they reach first. Sitting it
+        beside the theme item is consistent — this menu already carries a
+        setting rather than pure navigation.
+      */}
       {open ? (
         <div
           ref={menuRef}
@@ -256,6 +265,13 @@ export function FloatingBot() {
             }}
           >
             {theme === 'dark' ? 'Day theme' : 'Night theme'}
+          </MenuItem>
+          {/* Stays open, unlike the others: the label flipping is the only
+              confirmation that the tap landed, and on a phone the music has
+              already faded before a closed menu could tell you anything. */}
+          <MenuItem onSelect={() => setSound(!sound)}>
+            {sound ? <GlyphSpeakerMuted className="flex-none" /> : <GlyphSpeaker className="flex-none" />}
+            {sound ? 'Mute music' : 'Play music'}
           </MenuItem>
         </div>
       ) : null}

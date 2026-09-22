@@ -157,7 +157,7 @@ export function SettingsMenu({ className }: { className?: string }) {
               options={['Off', 'On']}
               checked={sound}
               onChange={setSound}
-              hint="Nothing plays sound yet. Audio never starts on its own."
+              hint="Faint background music, on by default. Your browser may wait for your first click before it starts."
             />
           </Panel>
         </div>

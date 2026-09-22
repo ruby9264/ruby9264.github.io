@@ -38,9 +38,9 @@
     would fade in inside a list item that is also fading in, and the two
     opacities would multiply.
   */
-  #main .panel,
-  #main li:not(:has(.panel)),
-  #main section > div > :is(h2, h3, p) {
+  #main .panel:not(.sda-none, .sda-none *),
+  #main li:not(:has(.panel)):not(.sda-none, .sda-none *),
+  #main section > div > :is(h2, h3, p):not(.sda-none, .sda-none *) {
     /*
       Longhands, not the `animation` shorthand. The shorthand resets
       animation-duration to 0s, and a scroll-driven animation with a 0s
@@ -67,17 +67,22 @@
   }
 
   /*
-    Opt-outs. These already move, or already have their own choreography,
-    and a second animation on top would fight them:
+    Opt-outs — handled in the selectors above rather than by an override
+    here. These subtrees already move, or already have their own
+    choreography, and a second animation on top would fight them:
       - #home       the S01 load sequence (§S01)
       - the ticker  already scrolling (§S02)
       - the S05 pinned track, which IS a scroll-driven animation already
+
+    This used to be a blanket `.sda-none, .sda-none * { animation-name: none
+    !important }`. It did stop the reveal, and everything else with it: an
+    !important declaration outranks an inline style, so the very
+    choreography the opt-out exists to protect was silently cancelled too —
+    the S02 ticker never scrolled and S01's load sequence never played, in
+    every browser that supports `animation-timeline` and therefore entered
+    this block at all. Excluding the subtrees from the reveal is what the
+    opt-out always meant; nothing here needs to override anything.
   */
-  .sda-none,
-  .sda-none * {
-    animation-name: none !important;
-    animation-timeline: auto !important;
-  }
 
   /* §4.3 / §4.5 — off for reduced motion, from either signal. */
   @media (prefers-reduced-motion: reduce) {

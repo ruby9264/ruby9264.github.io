@@ -36,5 +36,8 @@ export default defineConfig({
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
   },
-  server: { port: 5173 },
+  // 5173 unless something assigns a port. `npm run dev` by hand is unchanged;
+  // a harness that needs to avoid a port already in use can pass PORT instead
+  // of being blocked by a hardcoded one.
+  server: { port: Number(process.env.PORT) || 5173 },
 })

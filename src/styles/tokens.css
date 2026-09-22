@@ -1,37 +1,73 @@
 /* ============================================================
    tokens.css — §2.2 colour, §2.3 type, §2.4 space
-   Palette values are verbatim from the spec. Do not edit here
-   without editing the spec.
+
+   THE PALETTE. One set of colours, used two ways.
+
+     NIGHT  --bg-primary        #234151  deep teal blue
+            --accent-gold       #F2B84B  warm amber gold
+            --accent-secondary  #88BDB1  sage mint green
+            --text-primary      #FFF2D4  creamy soft yellow
+
+     DAY    the same four, inverted: the cream becomes the ground and
+            the deep teal becomes the ink, and the two accents drop to
+            the weights that carry on a light ground.
+
+            --bg-primary        #FFF2D4  creamy soft yellow
+            --accent-gold       #906310  deep amber
+            --accent-secondary  #2F6B5E  deep sage
+            --text-primary      #234151  deep teal blue
+
+   An inversion cannot be literal and stay legible. #F2B84B is a light
+   colour: on cream it measures 1.6:1 and is unreadable as anything.
+   What inverts is the ROLE — light-on-dark becomes dark-on-light — so
+   each accent is restated at the weight its new ground needs, keeping
+   its hue. Every value here carries its measured contrast, and the
+   /styleguide table re-measures the lot from the live DOM, so a number
+   that stops being true fails the table.
    ============================================================ */
 
 :root {
-  /* ---- Core moss ---- */
-  --moss-900: #1f3325; /* deepest moss, near-black green */
-  --moss-700: #3e5c36; /* moss shadow */
-  --moss-500: #6b8f4e; /* MOSS — primary brand green */
-  --moss-300: #9dbe72; /* moss light */
-  --moss-100: #d6e4bf; /* moss mist */
+  /* ============================================================
+     THE TWO MOODS, theme-independent.
 
-  /* ---- Core navy ---- */
-  --navy-900: #0b1524; /* void — darkest */
-  --navy-700: #14233a; /* navy ink — primary brand navy */
-  --navy-500: #22375a; /* navy mid */
-  --navy-300: #4a6a9b; /* navy light */
-  --navy-100: #c3d0e4; /* navy mist */
+     S00's airlock shows both at the same instant, so it cannot read
+     the theme-mapped tokens below — while the gate is open there is no
+     single answer to "what is --bg". These names always mean the same
+     colour whichever theme is active.
+     ============================================================ */
 
-  /* ---- Neutrals ---- */
-  --paper: #e8ede0; /* pale moss-tinted paper (light bg) */
-  --paper-2: #f3f6ec; /* raised surface, light mode */
-  --star: #f2f5ec; /* pure highlight */
+  /* ---- DAY: ink on paper ---- */
+  --day-bg: #fff2d4; /* creamy soft yellow — bg-primary */
+  --day-gold: #906310; /* deep amber — accent-gold */
+  --day-sec: #2f6b5e; /* deep sage — accent-secondary */
+  --day-text: #234151; /* deep teal blue — text-primary */
+  /* Derived steps: +45% white / -6% black off --day-bg, and the two ink
+     steps are --day-text mixed 18% and 22% back toward it. */
+  --day-raised: #fff8e7;
+  --day-sunken: #f0e3c7;
+  --day-soft: #4b6169;
+  --day-mute: #53686e;
+  --day-shadow: #234151; /* the ink itself — a hard shadow on paper */
 
-  /* ---- Accent (§2.3 discipline: max 4 uses sitewide) ---- */
-  --amber-500: #d9a441; /* COOKIE amber — CTA + reward moments only */
-  --amber-700: #a87a22; /* amber shadow */
+  /* ---- NIGHT: the deep teal side ---- */
+  --night-bg: #234151; /* deep teal blue — bg-primary */
+  --night-gold: #f2b84b; /* warm amber gold — accent-gold */
+  --night-sec: #88bdb1; /* sage mint green — accent-secondary */
+  --night-text: #fff2d4; /* creamy soft yellow — text-primary */
+  --night-raised: #304c5b;
+  --night-sunken: #182c37;
+  --night-soft: #d7d2bc;
+  --night-mute: #c1c0af;
+  --night-shadow: #0e1c24;
 
-  /* ---- Semantic ---- */
-  --error: #c2543d;
-  --success: #6b8f4e;
-  --warn: #d9a441;
+  /* ---- Semantic reds, one pair per mood ----
+     Two steps each: the 2px border colour (3:1 as a UI component) and
+     the message text (4.5:1). Night sits above its dark ground; day
+     sits below its light one. */
+  --day-error: #c24327; /* 4.58 / 4.81 / 3.92 on day bg / raised / sunken */
+  --day-error-ink: #b03a22; /* 5.44 / 5.71 / 4.66 */
+  --night-error: #ec7e69; /* 3.98 / 3.36 / 5.33 */
+  --night-error-ink: #f5a896; /* 5.61 / 4.73 / 7.51 */
 
   /* ---- Type scale (§2.3) ---- */
   --t-display: clamp(2.25rem, 7vw, 4.75rem); /* Silkscreen 700 — hero only */
@@ -62,116 +98,172 @@
 
   /* ---- Pixel unit (§2.1 rule 6) ---- */
   --px: 4px;
+
+  /* ---- Border weight (§2.1 rule 3) ----
+     Every UI container — nav, card, field, button, modal — draws its
+     edge with this. One value, so "crisp 2px pixel border" is a fact
+     about the system rather than a habit each component has to keep. */
+  --border: 2px;
 }
 
-/* Light theme (DAY SIDE) — moss-forward, sunlit station exterior */
+/* ============================================================
+   DAY MODE  ·  [data-theme='light']   ink on paper
+   ============================================================ */
 [data-theme='light'] {
-  --bg: var(--paper);
-  --bg-raised: var(--paper-2);
-  --bg-sunken: #dce3d2;
-  --ink: var(--navy-700);
-  --ink-soft: var(--navy-500);
-  /* Spec value was #5A6B58, annotated "5.1:1" but measuring 4.79 on --paper
-     and only 4.34 on --bg-sunken, where the footer's meta line and field
-     placeholders sit. Darkened so the token is safe on every surface:
-     5.45 / 5.94 / 4.94 on bg / raised / sunken. */
-  --ink-mute: #536251;
-  --line: var(--navy-700);
-  --brand: var(--moss-700);
-  --accent: var(--amber-700);
-  --shadow: var(--navy-700);
+  /* The four spec names, live, under whichever mood is active. Anything
+     that wants "the accent gold" reads --accent-gold and gets the right
+     one without having to know which mood it is in. */
+  --bg-primary: var(--day-bg);
+  --accent-gold: var(--day-gold);
+  --accent-secondary: var(--day-sec);
+  --text-primary: var(--day-text);
 
-  /* ---- ADDED TOKENS (not in the spec) — see PHASE-1-NOTES.md ----
-     The spec defines filled surfaces but no foreground colour to put on
-     them. Every value below is measured, not guessed; the /styleguide
-     contrast table re-checks them on every load. */
-  --on-brand: var(--star); /* 6.83:1 on --brand */
-  --on-accent: var(--navy-900); /* 4.77:1 on --accent. --star was 3.48 — failed. */
-  --on-line: var(--bg); /* 13.24:1 on the window-chrome bar */
-  --on-error: var(--star);
+  /* ---- Surfaces. Raised lifts toward white, sunken settles toward the
+     paper's own shadow — the opposite direction to night, which is the
+     whole point of the inversion. ---- */
+  --bg: var(--day-bg);
+  --bg-raised: var(--day-raised); /* cards, panels, the nav bar */
+  --bg-sunken: var(--day-sunken); /* fields and wells */
 
-  /* --error passes the 3:1 UI threshold as a 2px border (3.81:1 on --bg)
-     but fails 4.5:1 as message text. Text uses this darker step instead;
-     the border keeps the spec's red. 5.23 on --bg / 5.70 on --bg-raised /
-     4.73 on --bg-sunken. */
-  --error-ink: #9f4532;
+  /* ---- Ink. Measured on bg / raised / sunken. The binding surface is
+     --bg-sunken here: dark ink has least room on the darkest paper. ---- */
+  --ink: var(--day-text); /* 9.71 / 10.19 / 8.31 */
+  --ink-soft: var(--day-soft); /* 5.88 / 6.17 / 5.03 */
+  --ink-mute: var(--day-mute); /* 5.19 / 5.45 / 4.62 */
+  --ink-placeholder: var(--day-mute); /* alias, so the intent stays readable */
 
-  /* Kept as an alias so the intent stays readable in pixel.css. */
-  --ink-placeholder: var(--ink-mute);
+  /* ---- Structure ----
+     Deep sage carries every border, divider and window-chrome bar:
+     5.58 / 5.86 / 4.78, all clear of the 3:1 UI floor. */
+  --line: var(--day-sec);
+  --on-line: var(--day-bg); /* 5.58 on the chrome bar */
 
-  /* Knocked-back dither ink for disabled fills. Flat colour, not a blend
-     of two stops — the pattern stays hard-edged. The plain value is the
-     fallback for engines without color-mix(). */
-  --dither-mute: #b0bba9;
-  --dither-mute: color-mix(in srgb, var(--ink-mute) 45%, var(--bg-sunken));
+  /* ---- Fills ----
+     Sage is the standing button, amber the CTA. Both are dark fills
+     here and both take the cream as their foreground — the exact
+     mirror of night, where both are light fills over the teal. */
+  --brand: var(--day-sec);
+  --on-brand: var(--day-bg); /* 5.58 */
+  --accent: var(--day-gold);
+  --on-accent: var(--day-bg); /* 4.75 */
 
-  /* §7 says the focus ring is --accent; S00's state list says a moss
-     outline. On light they cannot both hold: amber-700 measures 3.22 on
-     --bg, 3.51 on --bg-raised and only 2.92 inside a well, so it misses
-     the 3:1 minimum §9 makes a ship blocker. Moss-700 clears it on every
-     surface (6.32 / 6.89 / 5.72), so light follows S00 and dark follows §7.
-     Ruby to confirm — this is one line per theme. */
-  --focus: var(--moss-700);
+  /* 4.75 / 4.99 / 4.26 — clear of 3:1 on every surface. */
+  --focus: var(--day-gold);
 
-  /* ---- MOCHI (§3) — navy pressure suit, moss visor, R patch ---- */
+  --shadow: var(--day-shadow);
+
+  /* ---- Semantic ---- */
+  --error: var(--day-error);
+  --error-ink: var(--day-error-ink);
+  --on-error: var(--day-bg);
+  --success: var(--day-sec);
+  --warn: var(--day-gold);
+
+  /* Knocked-back dither ink for disabled fills. A flat colour, not a
+     blend of two stops — the pattern stays hard-edged. The plain value
+     is the fallback for engines without color-mix(). */
+  --dither-mute: #c7bda6;
+  --dither-mute: color-mix(in srgb, var(--ink-mute) 32%, var(--bg-sunken));
+
+  /* ---- Pure highlight — on paper the highlight is the lightest step,
+     not the brightest ink. ---- */
+  --star: #fffbf0;
+
+  /* ---- MOCHI (§3) ---- Same rabbit, inverted: a cream suit and a deep
+     teal outline, so the silhouette reads down against the paper rather
+     than up out of the dark. */
   --mochi-fur: var(--star);
-  --mochi-helmet: var(--navy-100);
-  --mochi-visor: var(--moss-500);
-  --mochi-suit: var(--navy-700);
-  --mochi-dark: var(--navy-900);
-  --mochi-patch: var(--moss-300);
+  --mochi-helmet: #b8d6ce;
+  --mochi-visor: var(--day-gold);
+  --mochi-suit: #4a7f96;
+  --mochi-dark: var(--day-text);
+  --mochi-patch: var(--day-sec);
 
-  /* §4.1 — "navy outline / moss fill" */
-  --cursor-outline: var(--navy-700);
-  --cursor-fill: var(--moss-500);
+  /* §4.1 — teal outline / deep sage fill */
+  --cursor-outline: var(--day-text);
+  --cursor-fill: var(--day-sec);
+
+  /* ---- LOTUS FIELD ---- The night flower turned inside out: petals
+     that were cream on teal are teal on cream, and the core that was a
+     deeper gold than its petals is now a brighter one. */
+  --lotus-petal: var(--day-text);
+  --lotus-petal-deep: var(--day-gold);
+  --lotus-core: #d9982f;
+  --lotus-pad: var(--day-sec);
+  --lotus-pad-dark: #1f4c42;
+  --lotus-spark: var(--day-gold);
 
   --scheme: light;
 }
 
-/* Dark theme (NIGHT SIDE) — navy-forward, deep space */
+/* ============================================================
+   NIGHT MODE  ·  [data-theme='dark']   the deep teal side
+   ============================================================ */
 [data-theme='dark'] {
-  --bg: var(--navy-900);
-  --bg-raised: var(--navy-700);
-  --bg-sunken: #060d18;
-  --ink: var(--moss-100);
-  --ink-soft: var(--moss-300);
-  --ink-mute: #7f9668;
-  --line: var(--moss-500);
-  --brand: var(--moss-500);
-  --accent: var(--amber-500);
-  --shadow: #000000;
+  --bg-primary: var(--night-bg);
+  --accent-gold: var(--night-gold);
+  --accent-secondary: var(--night-sec);
+  --text-primary: var(--night-text);
 
-  /* ---- ADDED TOKENS (not in the spec) ---- */
-  --on-brand: var(--navy-900); /* 4.94:1 on --brand */
-  --on-accent: var(--navy-900); /* 8.14:1 on --accent */
-  --on-line: var(--bg); /* 4.94:1 on the window-chrome bar */
-  --on-error: var(--navy-900);
+  /* ---- Surfaces ---- */
+  --bg: var(--night-bg);
+  --bg-raised: var(--night-raised);
+  --bg-sunken: var(--night-sunken);
 
-  /* Lighter step for the same reason as the light theme: --error is only
-     3.48:1 on --bg-raised. 5.60 on --bg / 4.82 on --bg-raised. */
-  --error-ink: #e96549;
+  /* ---- Ink. The binding surface is --bg-raised: light ink has least
+     room on the lightest surface, the mirror of day. ---- */
+  --ink: var(--night-text); /* 9.71 / 8.18 / 13.00 */
+  --ink-soft: var(--night-soft); /* 7.11 / 5.99 / 9.51 */
+  --ink-mute: var(--night-mute); /* 5.87 / 4.95 / 7.86 */
+  --ink-placeholder: var(--night-mute);
 
-  /* Dark --ink-mute already clears 4.5:1 on every surface (5.99 on sunken),
-     so the placeholder token just points at it. */
-  --ink-placeholder: var(--ink-mute);
+  /* ---- Structure ---- Sage mint: 5.12 / 4.31 / 6.85. ---- */
+  --line: var(--night-sec);
+  --on-line: var(--night-bg); /* 5.12 on the chrome bar */
 
-  --dither-mute: #3b4735;
-  --dither-mute: color-mix(in srgb, var(--ink-mute) 45%, var(--bg-sunken));
+  /* ---- Fills ---- */
+  --brand: var(--night-sec);
+  --on-brand: var(--night-bg); /* 5.12 */
+  --accent: var(--night-gold);
+  --on-accent: var(--night-bg); /* 6.03 */
 
-  /* Amber holds easily against the void: 8.14 on --bg, 7.01 on --bg-raised. */
-  --focus: var(--accent);
+  --focus: var(--night-gold); /* 6.03 / 5.08 / 8.07 */
 
-  /* ---- MOCHI ---- The suit lifts to navy-500 so the silhouette still
-     reads against the void, and the outline inverts for the same reason. */
-  --mochi-fur: var(--moss-100);
-  --mochi-helmet: var(--navy-300);
-  --mochi-visor: var(--moss-500);
-  --mochi-suit: var(--navy-500);
-  --mochi-dark: var(--navy-900);
-  --mochi-patch: var(--moss-300);
+  --shadow: var(--night-shadow);
 
-  --cursor-outline: var(--moss-100);
-  --cursor-fill: var(--moss-500);
+  /* ---- Semantic ---- */
+  --error: var(--night-error);
+  --error-ink: var(--night-error-ink);
+  --on-error: var(--night-text);
+  --success: var(--night-sec);
+  --warn: var(--night-gold);
+
+  --dither-mute: #46545a;
+  --dither-mute: color-mix(in srgb, var(--ink-mute) 32%, var(--bg-sunken));
+
+  --star: #fffaf0;
+
+  /* ---- MOCHI (§3) ---- Teal pressure suit, gold visor, sage patch.
+     The suit lifts off --bg so the silhouette reads on a dark ground. */
+  --mochi-fur: var(--night-text);
+  --mochi-helmet: #bfddd6;
+  --mochi-visor: var(--night-gold);
+  --mochi-suit: #3e6a80;
+  --mochi-dark: var(--night-shadow);
+  --mochi-patch: var(--night-sec);
+
+  /* §4.1 — cream outline / sage fill */
+  --cursor-outline: var(--night-text);
+  --cursor-fill: var(--night-sec);
+
+  /* ---- LOTUS FIELD ---- Cream and amber petals on sage pads, with the
+     gold spark on bloom. */
+  --lotus-petal: var(--night-text);
+  --lotus-petal-deep: var(--night-gold);
+  --lotus-core: #d9982f;
+  --lotus-pad: var(--night-sec);
+  --lotus-pad-dark: #4e8a7e;
+  --lotus-spark: var(--night-gold);
 
   --scheme: dark;
 }

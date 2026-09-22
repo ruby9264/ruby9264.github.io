@@ -52,9 +52,9 @@ export function PixelCursor() {
 
     const styles = getComputedStyle(root)
     const colors: CursorColors = {
-      outline: styles.getPropertyValue('--cursor-outline').trim() || '#14233A',
-      fill: styles.getPropertyValue('--cursor-fill').trim() || '#6B8F4E',
-      highlight: styles.getPropertyValue('--star').trim() || '#F2F5EC',
+      outline: styles.getPropertyValue('--cursor-outline').trim() || '#234151',
+      fill: styles.getPropertyValue('--cursor-fill').trim() || '#2F6B5E',
+      highlight: styles.getPropertyValue('--star').trim() || '#FFFBF0',
     }
 
     const set = (name: keyof typeof HOTSPOTS, url: string | null) => {
@@ -89,9 +89,9 @@ export function PixelCursor() {
 
     const styles = getComputedStyle(document.documentElement)
     const colors: CursorColors = {
-      outline: styles.getPropertyValue('--cursor-outline').trim() || '#14233A',
-      fill: styles.getPropertyValue('--cursor-fill').trim() || '#6B8F4E',
-      highlight: styles.getPropertyValue('--star').trim() || '#F2F5EC',
+      outline: styles.getPropertyValue('--cursor-outline').trim() || '#234151',
+      fill: styles.getPropertyValue('--cursor-fill').trim() || '#2F6B5E',
+      highlight: styles.getPropertyValue('--star').trim() || '#FFFBF0',
     }
 
     const tick = () => {

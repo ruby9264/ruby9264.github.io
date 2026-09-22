@@ -1,0 +1,39 @@
+/* ============================================================
+   lotus.css — the ambient lotus field.
+
+   The layer sits ABOVE the content on purpose. <main> is full-width,
+   so a field underneath it could never be hovered in the gutters where
+   the flowers actually live. Everything here is therefore transparent
+   to the pointer except the flowers themselves.
+   ============================================================ */
+
+.lotus-field {
+  position: fixed;
+  inset: 0;
+  z-index: 800; /* over content, under the nav/dock/bot at 900 */
+  /* Rule one: the empty space between flowers must never intercept a
+     click, a hover, a text selection or a scroll. */
+  pointer-events: none;
+}
+
+.lotus-field__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  /* §2.1 rule 5. base.css already sets this for every canvas; repeated
+     here because it is load-bearing for this component specifically —
+     the sprites are drawn in whole pixels and a fractional device-pixel
+     ratio would otherwise smooth their edges into mush. */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+}
+
+/* Rule two: the flowers, and only the flowers, are live. One box per
+   lotus, positioned from the component, padded slightly past the sprite
+   so a bud is not a 22px needle to hit. */
+.lotus-field__hit {
+  position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
+}

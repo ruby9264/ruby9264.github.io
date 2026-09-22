@@ -5,13 +5,28 @@
    of it (§4.3).
    ============================================================ */
 
-/* Shared by the S02 ticker and the S01 starfield: one seamless pass. */
+/* The S01 starfield: two copies of a tile, so -50% is exactly one copy. */
 @keyframes marquee-scroll {
   from {
     transform: translateX(0);
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* The S02 ticker. Same idea, but the copy count is decided at runtime from
+   how much content a row holds and how wide the viewport is, so the endpoint
+   has to come with it — --marquee-shift is one copy's worth of travel,
+   -100/copies percent, set by the Marquee component. Hardcoding -50% here
+   would land mid-copy for any row that needed three or more, and the row
+   would jump on every lap. */
+@keyframes marquee-shift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(var(--marquee-shift, -50%));
   }
 }
 
